@@ -1,36 +1,36 @@
-# Contributing to S-UI
+# 参与贡献 S-UI
 
-Thank you for your interest in contributing to S-UI. This document explains how to set up a development environment, follow project conventions, and submit changes. Your contributions help make the **multi-inbound-per-user** approach and the rest of the project better for everyone.
+感谢你对 S-UI 的关注与贡献。本指南说明如何搭建开发环境、遵循项目约定并提交变更。你的贡献会让 **multi-inbound-per-user（单用户多入站）** 及整个项目变得更好。
 
-## Table of Contents
+## 目录
 
-- [Code of Conduct](#code-of-conduct)
-- [Development Environment Setup](#development-environment-setup)
-- [Coding Conventions and Style Guide](#coding-conventions-and-style-guide)
-- [Testing](#testing)
-- [Features That Need Help](#features-that-need-help)
-- [Pull Request Process](#pull-request-process)
-- [Adding This Guide in Your Repository](#adding-this-guide-in-your-repository)
-- [Reporting Bugs and Requesting Features](#reporting-bugs-and-requesting-features)
-
----
-
-## Code of Conduct
-
-Please be respectful and constructive when interacting with maintainers and other contributors. This project is for personal learning and communication; use it responsibly and legally.
+- [行为准则](#行为准则)
+- [开发环境搭建](#开发环境搭建)
+- [编码规范与风格指南](#编码规范与风格指南)
+- [测试](#测试)
+- [需要帮助的功能方向](#需要帮助的功能方向)
+- [Pull Request 流程](#pull-request-流程)
+- [在你的仓库中启用本指南](#在你的仓库中启用本指南)
+- [报告 Bug 与功能请求](#报告-bug-与功能请求)
 
 ---
 
-## Development Environment Setup
+## 行为准则
 
-### Prerequisites
+与维护者和其他贡献者交流时，请保持尊重、建设性。本项目用于个人学习与交流，请合法、负责地使用。
 
-- **Go**: 1.25 or later (see `go.mod` for the exact version).
-- **Git**: For cloning and submodules.
-- **C compiler**: Required for CGO (e.g. `gcc`, `musl-dev` on Alpine).
-- **Node.js** (optional): Only if you plan to work on or rebuild the frontend. The repo can be run with pre-built frontend assets.
+---
 
-### Clone and Submodules
+## 开发环境搭建
+
+### 前置要求
+
+- **Go**：1.25 或更高（准确版本见 `go.mod`）。
+- **Git**：用于克隆仓库和子模块。
+- **C 编译器**：CGO 需要（如 `gcc`，Alpine 下可用 `musl-dev`）。
+- **Node.js**（可选）：仅在你要开发或重建前端时需要。仓库也可使用预编译前端资源运行。
+
+### 克隆与子模块
 
 ```bash
 git clone https://github.com/alireza0/s-ui
@@ -38,30 +38,30 @@ cd s-ui
 git submodule update --init --recursive
 ```
 
-The **frontend** lives in a submodule. If you only work on the backend, you can use the existing `web/html` contents or build the frontend once (see below).
+**frontend** 位于子模块中。如果你只开发后端，可直接使用现有 `web/html` 内容，或先构建一次前端（见下文）。
 
-### Backend-Only Development (quickest)
+### 仅后端开发（最快路径）
 
-1. Build and run with the provided script (builds backend and runs with debug + local DB):
+1. 使用脚本构建并运行（构建后端，使用 debug + 本地 DB 运行）：
 
    ```bash
    ./runSUI.sh
    ```
 
-   This runs `./build.sh` then `SUI_DB_FOLDER="db" SUI_DEBUG=true ./sui`.
+   该脚本会执行 `./build.sh`，然后运行 `SUI_DB_FOLDER="db" SUI_DEBUG=true ./sui`。
 
-2. Or build manually:
+2. 或手动构建：
 
    ```bash
    ./build.sh
    SUI_DB_FOLDER=db SUI_DEBUG=true ./sui
    ```
 
-   Default panel: **http://localhost:2095/app/** (user: `admin`, password: `admin` — change in production).
+   默认面板地址：**http://localhost:2095/app/**（用户名 `admin`，密码 `admin`，生产环境请务必修改）。
 
-### Full Stack (Backend + Frontend)
+### 全栈开发（后端 + 前端）
 
-1. **Frontend** (separate repo in submodule):
+1. **前端**（子模块中的独立仓库）：
 
    ```bash
    cd frontend
@@ -70,7 +70,7 @@ The **frontend** lives in a submodule. If you only work on the backend, you can 
    cd ..
    ```
 
-2. **Replace web assets and build backend**:
+2. **替换 Web 静态资源并构建后端**：
 
    ```bash
    mkdir -p web/html
@@ -79,7 +79,7 @@ The **frontend** lives in a submodule. If you only work on the backend, you can 
    go build -ldflags "-w -s" -tags "with_quic,with_grpc,with_utls,with_acme,with_gvisor" -o sui main.go
    ```
 
-3. Run:
+3. 运行：
 
    ```bash
    SUI_DB_FOLDER=db SUI_DEBUG=true ./sui
@@ -87,190 +87,190 @@ The **frontend** lives in a submodule. If you only work on the backend, you can 
 
 ### Build Tags
 
-The backend is built with these tags for full functionality:
+后端完整功能构建使用以下 tags：
 
-- `with_quic`, `with_grpc`, `with_utls`, `with_acme`, `with_gvisor`
+- `with_quic`、`with_grpc`、`with_utls`、`with_acme`、`with_gvisor`
 
-Use the same tags when building locally if you need feature parity with releases.
+若你希望本地行为与发布版本一致，请使用同样的 tags 构建。
 
-### Environment Variables (development)
+### 环境变量（开发）
 
-| Variable       | Description                    | Example   |
+| 变量 | 说明 | 示例 |
 |----------------|--------------------------------|-----------|
-| `SUI_DB_FOLDER`| Directory for SQLite DB files  | `db`      |
-| `SUI_DEBUG`    | Enable debug mode              | `true`    |
-| `SUI_LOG_LEVEL`| Log level                      | `debug`   |
-| `SUI_BIN_FOLDER` | Directory for binaries       | `bin`     |
+| `SUI_DB_FOLDER`| SQLite DB 文件目录 | `db` |
+| `SUI_DEBUG` | 启用调试模式 | `true` |
+| `SUI_LOG_LEVEL`| 日志级别 | `debug` |
+| `SUI_BIN_FOLDER` | 可执行文件目录 | `bin` |
 
-### Docker (optional)
+### Docker（可选）
 
 ```bash
 git clone https://github.com/alireza0/s-ui
 cd s-ui
 git submodule update --init --recursive
 docker build -t s-ui .
-# or: docker compose up -d
+# 或: docker compose up -d
 ```
 
 ---
 
-## Coding Conventions and Style Guide
+## 编码规范与风格指南
 
-### General
+### 通用
 
-- Write clear, maintainable code. Prefer small, focused functions and packages.
-- Comment non-obvious logic and public APIs.
-- Handle errors explicitly; avoid ignoring `err` unless intentional.
+- 编写清晰、可维护的代码，优先小而专注的函数和包。
+- 为不直观逻辑和公开 API 添加必要注释。
+- 显式处理错误；除非有意为之，不要忽略 `err`。
 
-### Go Style
+### Go 风格
 
-- Follow **standard Go style** and **[Effective Go](https://go.dev/doc/effective_go)**.
-- Run **gofmt** (or **goimports**) before committing:
+- 遵循 **标准 Go 风格** 与 **[Effective Go](https://go.dev/doc/effective_go)**。
+- 提交前运行 **gofmt**（或 **goimports**）：
 
   ```bash
   gofmt -w .
-  # or: goimports -w .
+  # 或: goimports -w .
   ```
 
-- Use **camelCase** for unexported names and **PascalCase** for exported names.
-- Keep package names short and lowercase (e.g. `api`, `service`, `util`).
-- Group imports: standard library, then third-party, then project imports (as in existing files).
+- 非导出名称使用 **camelCase**，导出名称使用 **PascalCase**。
+- 包名保持简短小写（如 `api`、`service`、`util`）。
+- import 分组顺序：标准库、第三方库、项目内包（与现有文件保持一致）。
 
-### Project Structure Conventions
+### 项目结构约定
 
-- **`api/`**: HTTP handlers and API routing (e.g. `apiHandler.go`, `apiV2Handler.go`).
-- **`service/`**: Business logic and panel/core operations.
-- **`database/model/`**: GORM models and DB entities.
-- **`util/`**: Shared utilities (e.g. link/sub conversion, JSON).
-- **`core/`**: sing-box integration and core runtime.
-- **`sub/`**: Subscription (link/json) handling.
+- **`api/`**：HTTP 处理器与 API 路由（如 `apiHandler.go`、`apiV2Handler.go`）。
+- **`service/`**：业务逻辑与面板/核心操作。
+- **`database/model/`**：GORM 模型与数据库实体。
+- **`util/`**：共享工具（如链接/订阅转换、JSON 相关）。
+- **`core/`**：sing-box 集成与核心运行时。
+- **`sub/`**：订阅（link/json）处理。
 
-When adding new features, place code in the appropriate layer (handler → service → model/util) and avoid circular dependencies.
+新增功能时，请按层放置代码（handler → service → model/util），避免循环依赖。
 
-### Naming and Patterns
+### 命名与模式
 
-- Handlers: suffix `Handler` (e.g. `APIHandler`, `APIv2Handler`).
-- Services: suffix `Service` or use package name (e.g. `ApiService`, `LinkService`).
-- Models: clear struct names with JSON/gorm tags (see `database/model/`).
+- Handler：后缀 `Handler`（如 `APIHandler`、`APIv2Handler`）。
+- Service：后缀 `Service` 或按包名命名（如 `ApiService`、`LinkService`）。
+- Model：结构体命名清晰，JSON/gorm tag 合理（参考 `database/model/`）。
 
 ---
 
-## Testing
+## 测试
 
-### Current State
+### 当前状态
 
-- The project does not yet have a formal test suite (no `*_test.go` files in the repo).
-- CI currently focuses on **builds** (e.g. `release.yml`) rather than automated tests.
+- 项目目前尚无正式测试套件（仓库中暂无 `*_test.go`）。
+- CI 当前主要关注 **构建**（如 `release.yml`），而非自动化测试。
 
-### What You Can Do Now
+### 你现在可以做的
 
-1. **Build verification**: Before submitting a PR, ensure the project builds:
+1. **构建验证**：提交 PR 前先确认项目可构建：
 
    ```bash
    go build -ldflags "-w -s" -tags "with_quic,with_grpc,with_utls,with_acme,with_gvisor" -o sui main.go
    ```
 
-2. **Manual testing**: Run with `./runSUI.sh`, test the changed area (panel, API, subscription, etc.).
+2. **手动测试**：用 `./runSUI.sh` 运行，重点测试你改动的模块（面板、API、订阅等）。
 
-3. **Future tests**: Contributions that add **unit tests** (e.g. for `util/`, `service/`, or API handlers) or **integration tests** are very welcome. Prefer the standard library `testing` package and table-driven tests where appropriate.
+3. **未来测试建设**：非常欢迎补充 **单元测试**（如 `util/`、`service/`、API handlers）和 **集成测试**。建议优先使用标准库 `testing` 与表驱动测试。
 
-### Running the Linter (optional)
+### 运行 Linter（可选）
 
 ```bash
 go vet ./...
-# Optional: staticcheck, golangci-lint, etc.
+# 可选: staticcheck, golangci-lint 等
 ```
 
 ---
 
-## Features That Need Help
+## 需要帮助的功能方向
 
-Community help is especially valuable in these areas. Check the [Issues](https://github.com/alireza0/s-ui/issues) for current tasks and ideas.
+社区贡献在以下方向尤其有价值。可查看 [Issues](https://github.com/alireza0/s-ui/issues) 了解当前任务与想法。
 
-### High-Value Areas
+### 高价值方向
 
-- **Multi-inbound per user**: Core differentiator of S-UI; improvements to UX, docs, and robustness are welcome.
-- **API (v1 and v2)**: Completeness, consistency, and documentation (see [API Documentation](https://github.com/alireza0/s-ui/wiki/API-Documentation)).
-- **Subscription service**: Link conversion, JSON subscription, and info endpoints (`sub/`, `util/`).
-- **Testing**: Adding unit and integration tests for critical paths.
-- **Documentation**: User docs, API examples, and contribution docs (like this file).
-- **Platform support**: macOS is experimental; Windows and Linux improvements are welcome (see `windows/` and `.github/workflows/`).
+- **单用户多入站**：S-UI 的核心差异化能力，欢迎改进 UX、文档与稳定性。
+- **API（v1 / v2）**：完善性、一致性和文档（见 [API Documentation](https://github.com/alireza0/s-ui/wiki/API-Documentation)）。
+- **订阅服务**：链接转换、JSON 订阅与信息端点（`sub/`、`util/`）。
+- **测试**：关键路径上的单元测试与集成测试。
+- **文档**：用户文档、API 示例和贡献文档（如本文件）。
+- **平台支持**：macOS 仍为实验性支持；欢迎改进 Windows 和 Linux（见 `windows/` 与 `.github/workflows/`）。
 
-### How to Find Tasks
+### 如何寻找任务
 
-- **Good first issue**: Look for issues labeled `good first issue` or `help wanted`.
-- **Feature requests**: [Feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
-- **Bugs**: [Bug report template](.github/ISSUE_TEMPLATE/bug_report.md).
+- **Good first issue**：优先找带 `good first issue` 或 `help wanted` 标签的问题。
+- **功能请求**：使用 [feature request 模板](.github/ISSUE_TEMPLATE/feature_request.md)。
+- **Bug**：使用 [bug report 模板](.github/ISSUE_TEMPLATE/bug_report.md)。
 
-If you want to work on a larger feature, open an issue first to discuss approach and avoid duplicate work.
-
----
-
-## Pull Request Process
-
-1. **Fork and branch**
-
-   - Fork the repository on GitHub.
-   - Create a branch from `main`: e.g. `git checkout -b fix/issue-123` or `feature/sub-improvements`.
-
-2. **Make your changes**
-
-   - Follow the [Coding Conventions](#coding-conventions-and-style-guide).
-   - Run `gofmt` and ensure the project builds (see [Testing](#testing)).
-   - Keep commits focused and messages clear (e.g. "Fix link conversion for VMess", "Add tests for outJson").
-
-3. **Push and open a PR**
-
-   - Push your branch and open a Pull Request against `main`.
-   - Use the PR description to explain:
-     - What problem or feature the PR addresses.
-     - What you changed and how to verify it.
-   - Reference any related issue (e.g. "Fixes #123").
-
-4. **Review and CI**
-
-   - Maintainers will review your code. CI (e.g. build workflows) must pass.
-   - Address feedback by pushing new commits to the same branch.
-
-5. **Merge**
-
-   - Once approved and CI is green, a maintainer will merge your PR. Thank you for contributing!
-
-### PR Guidelines
-
-- Prefer **small, reviewable PRs**. Split large features into logical steps.
-- Avoid unrelated changes (e.g. formatting-only or refactors in a feature PR).
-- Ensure your branch is up to date with `main` before submitting (rebase or merge as the project prefers).
+若你计划开发较大功能，建议先开 issue 讨论方案，避免重复劳动。
 
 ---
 
-## Adding This Guide in Your Repository
+## Pull Request 流程
 
-If you maintain a fork or your own repository and want the contribution guide to be visible and linked properly:
+1. **Fork 并创建分支**
 
-1. **Keep `CONTRIBUTING.md` in the repository root**  
-   GitHub automatically discovers a file named `CONTRIBUTING.md` (or `CONTRIBUTING`) in the root. When someone opens a new issue or pull request, GitHub can show a link to it. The community profile also uses it for the “Contributing” section.
+   - 在 GitHub 上 fork 本仓库。
+   - 从 `main` 创建分支，例如：`git checkout -b fix/issue-123` 或 `feature/sub-improvements`。
 
-2. **Link from README**  
-   Add a short line in your main `README.md` so new contributors see it when they land on the repo, for example:
+2. **完成改动**
+
+   - 遵循 [编码规范](#编码规范与风格指南)。
+   - 运行 `gofmt` 并确保项目可构建（见 [测试](#测试)）。
+   - 保持提交聚焦，commit message 清晰（如“修复 VMess 链接转换”“为 outJson 添加测试”）。
+
+3. **推送并创建 PR**
+
+   - 推送分支并向 `main` 发起 Pull Request。
+   - 在 PR 描述中说明：
+     - PR 解决的问题或新增能力。
+     - 你修改了什么，以及如何验证。
+   - 关联相关 issue（如 `Fixes #123`）。
+
+4. **评审与 CI**
+
+   - 维护者会进行代码评审，CI（如构建流程）需要通过。
+   - 请在同一分支继续提交以响应评审意见。
+
+5. **合并**
+
+   - 审核通过且 CI 绿灯后，维护者会合并 PR。感谢你的贡献！
+
+### PR 建议
+
+- 优先提交 **小而可评审** 的 PR；大功能尽量拆分成多个逻辑步骤。
+- 避免夹带无关改动（如纯格式化或与功能无关的重构）。
+- 提交前保持分支与 `main` 同步（按项目偏好选择 rebase 或 merge）。
+
+---
+
+## 在你的仓库中启用本指南
+
+如果你维护 fork 或自己的仓库，并希望贡献指南可见且链接正确：
+
+1. **将 `CONTRIBUTING.md` 放在仓库根目录**  
+   GitHub 会自动识别根目录的 `CONTRIBUTING.md`（或 `CONTRIBUTING`）。当用户创建 issue 或 PR 时，GitHub 会展示该文档链接。社区资料页也会将其用于 “Contributing” 部分。
+
+2. **从 README 链接**  
+   在主 `README.md` 中加入一行简短说明，方便新贡献者第一时间看到，例如：
    ```markdown
-   **Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding conventions, and the pull request process.
+   **想参与贡献？** 请查看 [CONTRIBUTING.md](CONTRIBUTING.md)，其中包含开发环境、编码规范与 PR 流程。
    ```
 
-3. **Optional: GitHub “Contributing” link**  
-   In the repository **Settings → General → Features**, ensure “Issues” (and optionally “Discussions”) are enabled. The link to `CONTRIBUTING.md` appears when users create a new issue or PR; no extra config is needed as long as the file is in the root.
+3. **可选：检查 GitHub “Contributing” 入口**  
+   在仓库 **Settings → General → Features** 中确认启用了 “Issues”（可选启用 “Discussions”）。只要文件在根目录，创建 issue/PR 时就会显示 `CONTRIBUTING.md` 链接，无需额外配置。
 
-4. **When forking**  
-   If you fork S-UI, `CONTRIBUTING.md` is already in the repo. Update the clone URLs and repo names in this file if you want your fork’s contribution instructions to point to your own repository.
-
----
-
-## Reporting Bugs and Requesting Features
-
-- **Bugs**: Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md). Include version, OS, steps to reproduce, and expected vs actual behavior.
-- **Features**: Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). Describe the use case and, if possible, a proposed approach.
-- **Questions**: Use the [question template](.github/ISSUE_TEMPLATE/question-template.md) or discussions if enabled.
+4. **Fork 场景**  
+   若你 fork 了 S-UI，`CONTRIBUTING.md` 已包含在仓库中。若希望指南指向你自己的仓库，请将本文中的克隆地址与仓库名替换为你的信息。
 
 ---
 
-Thank you for helping S-UI grow. Your contributions make it possible for more users to adopt S-UI in production and benefit from its multi-inbound-per-user design.
+## 报告 Bug 与功能请求
+
+- **Bug**：使用 [bug report 模板](.github/ISSUE_TEMPLATE/bug_report.md)，请包含版本、操作系统、复现步骤、期望行为与实际行为。
+- **功能请求**：使用 [feature request 模板](.github/ISSUE_TEMPLATE/feature_request.md)，说明使用场景，并尽量给出实现思路。
+- **问题咨询**：使用 [question 模板](.github/ISSUE_TEMPLATE/question-template.md)，或在启用讨论区时使用 Discussions。
+
+---
+
+感谢你帮助 S-UI 持续成长。你的贡献让更多用户能够在生产环境采用 S-UI，并受益于其单用户多入站设计。

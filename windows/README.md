@@ -1,23 +1,23 @@
-# Windows Files
+# Windows 文件
 
-This directory contains all Windows-specific files for S-UI.
+该目录包含 S-UI 在 Windows 平台的所有专用文件。
 
-## Available Files:
+## 文件列表
 
-- **s-ui-windows.xml**: Windows Service configuration
-- **install-windows.bat**: Installation script
-- **s-ui-windows.bat**: Control panel
-- **uninstall-windows.bat**: Uninstallation script
-- **build-windows.bat**: Simple build script for CMD
-- **build-windows.ps1**: Advanced build script for PowerShell
+- **s-ui-windows.xml**：Windows 服务配置
+- **install-windows.bat**：安装脚本
+- **s-ui-windows.bat**：控制面板脚本
+- **uninstall-windows.bat**：卸载脚本
+- **build-windows.bat**：适用于 CMD 的简易构建脚本
+- **build-windows.ps1**：适用于 PowerShell 的高级构建脚本
 
-## Usage:
+## 使用方法
 
-To install S-UI on Windows:
-1. Run `install-windows.bat` as Administrator
-2. Follow the installation wizard
-3. Use `s-ui-windows.bat` for management
+在 Windows 安装 S-UI：
+1. 以管理员身份运行 `install-windows.bat`
+2. 按安装向导完成安装
+3. 使用 `s-ui-windows.bat` 进行管理
 
-To build from source:
-- With CMD: `build-windows.bat`
-- With PowerShell: `.\build-windows.ps1`
+从源码构建：
+- CMD：`build-windows.bat`
+- PowerShell：`.\build-windows.ps1`
