@@ -14,6 +14,7 @@ fi
 
 GITHUB_REPO_URL="https://github.com/alireza0/s-ui"
 GITHUB_API_URL="https://api.github.com/repos/alireza0/s-ui"
+SCRIPT_REPO_URL="https://github.com/hxzlplp7/s-ui"
 
 build_download_url() {
     local url="$1"
@@ -183,6 +184,9 @@ install_s-ui() {
 
     tar zxvf s-ui-linux-${arch_name}.tar.gz
     rm s-ui-linux-${arch_name}.tar.gz -f
+
+    # Download translated s-ui.sh from our repository
+    wget -N --no-check-certificate -O s-ui/s-ui.sh "$(build_download_url "https://raw.githubusercontent.com/hxzlplp7/s-ui/main/s-ui.sh")"
 
     chmod +x s-ui/sui s-ui/s-ui.sh
     cp s-ui/s-ui.sh /usr/bin/s-ui
