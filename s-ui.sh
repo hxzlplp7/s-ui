@@ -5,6 +5,20 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+SUI_GITHUB_PROXY=${SUI_GITHUB_PROXY:-}
+if [[ -n "$SUI_GITHUB_PROXY" && "${SUI_GITHUB_PROXY: -1}" != "/" ]]; then
+    SUI_GITHUB_PROXY="${SUI_GITHUB_PROXY}/"
+fi
+
+gh_url() {
+    local url="$1"
+    if [[ -n "$SUI_GITHUB_PROXY" ]]; then
+        echo "${SUI_GITHUB_PROXY}${url}"
+    else
+        echo "$url"
+    fi
+}
+
 function LOGD() {
     echo -e "${yellow}[DEG] $* ${plain}"
 }
@@ -63,7 +77,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/main/install.sh)
+    bash <(curl -Ls "$(gh_url "https://raw.githubusercontent.com/alireza0/s-ui/main/install.sh")")
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -82,7 +96,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/main/install.sh)
+    bash <(curl -Ls "$(gh_url "https://raw.githubusercontent.com/alireza0/s-ui/main/install.sh")")
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         exit 0
@@ -98,7 +112,7 @@ custom_version() {
     exit 1
     fi
 
-    download_link="https://raw.githubusercontent.com/alireza0/s-ui/master/install.sh"
+    download_link="$(gh_url "https://raw.githubusercontent.com/alireza0/s-ui/master/install.sh")"
 
     install_command="bash <(curl -Ls $download_link) $panel_version"
 
@@ -295,7 +309,7 @@ show_log() {
 }
 
 update_shell() {
-    wget -O /usr/bin/s-ui -N --no-check-certificate https://github.com/alireza0/s-ui/raw/main/s-ui.sh
+    wget -O /usr/bin/s-ui -N --no-check-certificate "$(gh_url "https://github.com/alireza0/s-ui/raw/main/s-ui.sh")"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"

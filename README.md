@@ -62,6 +62,16 @@
 bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/master/install.sh)
 ```
 
+国内网络可使用镜像源（通过环境变量 `SUI_GITHUB_PROXY`）：
+
+```sh
+SUI_GITHUB_PROXY="https://ghproxy.cn/" bash <(curl -Ls https://ghproxy.cn/https://raw.githubusercontent.com/alireza0/s-ui/master/install.sh)
+```
+
+说明：
+- `SUI_GITHUB_PROXY` 会同时用于 `install.sh` 和 `s-ui.sh` 内部的 GitHub 下载地址（如 release 包、raw 脚本）。
+- 如 `ghproxy.cn` 不可用，可替换为其他兼容前缀，例如 `https://ghproxy.com/`。
+
 ### Windows
 1. 从 [GitHub Releases](https://github.com/alireza0/s-ui/releases/latest) 下载最新 Windows 版本
 2. 解压 ZIP 文件
@@ -76,11 +86,18 @@ bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/master/install.s
 VERSION=1.0.0 && bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/$VERSION/install.sh) $VERSION
 ```
 
+国内镜像源示例：
+
+```sh
+VERSION=1.0.0 && SUI_GITHUB_PROXY="https://ghproxy.cn/" bash <(curl -Ls https://ghproxy.cn/https://raw.githubusercontent.com/alireza0/s-ui/$VERSION/install.sh) $VERSION
+```
+
 ## 手动安装
 
 ### Linux/macOS
 1. 在 GitHub 获取与你系统/架构匹配的最新版 S-UI：[https://github.com/alireza0/s-ui/releases/latest](https://github.com/alireza0/s-ui/releases/latest)
 2. **可选**：获取最新 `s-ui.sh`：[https://raw.githubusercontent.com/alireza0/s-ui/master/s-ui.sh](https://raw.githubusercontent.com/alireza0/s-ui/master/s-ui.sh)
+   - 国内镜像链接示例：`https://ghproxy.cn/https://raw.githubusercontent.com/alireza0/s-ui/master/s-ui.sh`
 3. **可选**：将 `s-ui.sh` 复制到 /usr/bin/ 并执行 `chmod +x /usr/bin/s-ui`
 4. 将 s-ui 的 tar.gz 解压到你选择的目录，并进入解压目录
 5. 将 *.service 文件复制到 /etc/systemd/system/，然后执行 `systemctl daemon-reload`

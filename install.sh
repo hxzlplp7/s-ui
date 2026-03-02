@@ -7,6 +7,23 @@ plain='\033[0m'
 
 cur_dir=$(pwd)
 
+SUI_GITHUB_PROXY=${SUI_GITHUB_PROXY:-}
+if [[ -n "$SUI_GITHUB_PROXY" && "${SUI_GITHUB_PROXY: -1}" != "/" ]]; then
+    SUI_GITHUB_PROXY="${SUI_GITHUB_PROXY}/"
+fi
+
+GITHUB_REPO_URL="https://github.com/alireza0/s-ui"
+GITHUB_API_URL="https://api.github.com/repos/alireza0/s-ui"
+
+build_download_url() {
+    local url="$1"
+    if [[ -n "$SUI_GITHUB_PROXY" ]]; then
+        echo "${SUI_GITHUB_PROXY}${url}"
+    else
+        echo "$url"
+    fi
+}
+
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}Fatal error: ${plain} Please run this script with root privilege \n " && exit 1
 
@@ -134,23 +151,26 @@ prepare_services() {
 install_s-ui() {
     cd /tmp/
 
+    local arch_name
+    arch_name=$(arch)
+
     if [ $# == 0 ]; then
-        last_version=$(curl -Ls "https://api.github.com/repos/alireza0/s-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "$(build_download_url "${GITHUB_API_URL}/releases/latest")" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
-            echo -e "${red}Failed to fetch s-ui version, it maybe due to Github API restrictions, please try it later${plain}"
-            exit 1
+            last_version="latest"
         fi
         echo -e "Got s-ui latest version: ${last_version}, beginning the installation..."
-        wget -N --no-check-certificate -O /tmp/s-ui-linux-$(arch).tar.gz https://github.com/alireza0/s-ui/releases/download/${last_version}/s-ui-linux-$(arch).tar.gz
+        url="$(build_download_url "${GITHUB_REPO_URL}/releases/latest/download/s-ui-linux-${arch_name}.tar.gz")"
+        wget -N --no-check-certificate -O /tmp/s-ui-linux-${arch_name}.tar.gz ${url}
         if [[ $? -ne 0 ]]; then
-            echo -e "${red}Downloading s-ui failed, please be sure that your server can access Github ${plain}"
+            echo -e "${red}Downloading s-ui failed, please be sure that your server can access Github (or set SUI_GITHUB_PROXY) ${plain}"
             exit 1
         fi
     else
         last_version=$1
-        url="https://github.com/alireza0/s-ui/releases/download/${last_version}/s-ui-linux-$(arch).tar.gz"
+        url="$(build_download_url "${GITHUB_REPO_URL}/releases/download/${last_version}/s-ui-linux-${arch_name}.tar.gz")"
         echo -e "Beginning the install s-ui v$1"
-        wget -N --no-check-certificate -O /tmp/s-ui-linux-$(arch).tar.gz ${url}
+        wget -N --no-check-certificate -O /tmp/s-ui-linux-${arch_name}.tar.gz ${url}
         if [[ $? -ne 0 ]]; then
             echo -e "${red}download s-ui v$1 failed,please check the version exists${plain}"
             exit 1
@@ -161,8 +181,8 @@ install_s-ui() {
         systemctl stop s-ui
     fi
 
-    tar zxvf s-ui-linux-$(arch).tar.gz
-    rm s-ui-linux-$(arch).tar.gz -f
+    tar zxvf s-ui-linux-${arch_name}.tar.gz
+    rm s-ui-linux-${arch_name}.tar.gz -f
 
     chmod +x s-ui/sui s-ui/s-ui.sh
     cp s-ui/s-ui.sh /usr/bin/s-ui
